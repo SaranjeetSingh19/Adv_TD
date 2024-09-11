@@ -12,22 +12,28 @@ const Login = () => {
 
   const { login } = usePostStore();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      if (!email || !password) {
-        toast.error("All fields are required");
-        return;
-      }
 
-      await login(email, password);
-
-      toast.success("Login successful");
-      navigate("/");
-    } catch (error) {
-      toast.error("Something went wrong");
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  try {
+    if (!email || !password) {
+      toast.error("All fields are required");
+      return;
     }
-  };
+
+    const token = await login(email, password);
+    console.log("token:", token);
+    if (!token) {
+      toast.error("Invalid email or password");
+      return;
+    }
+    toast.success("Login successful");
+    navigate("/");
+  } catch (error) {
+    console.log("Error:", error);
+    toast.error("Something went wrong");
+  }
+};
 
   return (
     <div className="flex text-black dark:text-white flex-col mt-40 md:my-20 text-center items-center">

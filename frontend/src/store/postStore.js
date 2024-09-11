@@ -63,25 +63,40 @@ export const usePostStore = create((set) => ({
   },
 
   login: async (email, password) => {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    const data = await response.json();
-    const token = data.token;
+      if (!response.ok) {
+        throw new Error("Invalid email or password");
+      }
 
-    set(() => ({
-      token,
-    }));
+      const data = await response.json();
+      if (!data || !data.token) {
+        throw new Error("Invalid email or password");
+      }
 
-    localStorage.setItem("token", token);
+      const token = data.token;
+
+      set(() => ({
+        token,
+      }));
+
+      localStorage.setItem("token", token);
+
+      return token;
+    } catch (error) {
+      console.log("API error:", error);
+      throw error;
+    }
   },
 
   register: async (name, email, password) => {
