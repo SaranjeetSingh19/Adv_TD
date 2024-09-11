@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { usePostStore } from "../store/postStore";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -8,6 +9,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+
+  const { register } = usePostStore();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,32 +20,7 @@ const Register = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-
-      if (!response.ok) {
-        toast.error("Failed to register");
-        return;
-      }
-
-      const data = await response.json();
-      const token = data.token;
-
-      if (!token) {
-        toast.error("Login first");
-        return;
-      }
-
-      localStorage.setItem("token", token);
+      await register(name, email, password);
 
       toast.success("Sign in successful");
       navigate("/");
@@ -52,7 +30,9 @@ const Register = () => {
   };
   return (
     <div className="flex text-white flex-col mt-32 md:my-20  text-center items-center">
-      <h1 className=" text-3xl font-extrabold text-black dark:text-white">Join today.</h1>
+      <h1 className=" text-3xl font-extrabold text-black dark:text-white">
+        Join kro today.
+      </h1>
       <div className="shadow-md shadow-zinc-400 px-12 py-4 dark:bg-transparent bg-sky-50 text-black dark:text-white md:p-10 mt-5 rounded-2xl">
         <form onSubmit={handleSubmit}>
           <input

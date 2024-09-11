@@ -61,4 +61,49 @@ export const usePostStore = create((set) => ({
       posts: state.posts.map((post) => (post._id === pid ? data.post : post)),
     }));
   },
+
+  login: async (email, password) => {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+    const token = data.token;
+
+    set(() => ({
+      token,
+    }));
+
+    localStorage.setItem("token", token);
+  },
+
+  register: async (name, email, password) => {
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+    const token = data.token;
+
+    set(() => ({
+      token,
+    }));
+
+    localStorage.setItem("token", token);
+  },
 }));

@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
+import { usePostStore } from "../store/postStore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+
+  const { login } = usePostStore();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,31 +20,8 @@ const Login = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      await login(email, password);
 
-      if (!response.ok) {
-        toast.error("Failed to login");
-        return;
-      }
-
-      const data = await response.json();
-      const token = data.token;
-
-      if (!token) {
-        toast.error("Login failed");
-        return;
-      }
-
-      localStorage.setItem("token", token);
       toast.success("Login successful");
       navigate("/");
     } catch (error) {
@@ -49,10 +29,11 @@ const Login = () => {
     }
   };
 
-
   return (
     <div className="flex text-black dark:text-white flex-col mt-40 md:my-20 text-center items-center">
-      <h1 className="text-3xl  font-extrabold text-black dark:text-white">{"Let's"} go.</h1>
+      <h1 className="text-3xl  font-extrabold text-black dark:text-white">
+        {"Let's"} go.
+      </h1>
       <div className="shadow-md shadow-zinc-400 px-12 py-4 md:p-10 mt-5 rounded-2xl dark:bg-transparent bg-sky-50">
         <form onSubmit={handleSubmit}>
           <input
@@ -61,7 +42,7 @@ const Login = () => {
             placeholder="Email"
             onChange={(event) => setEmail(event.target.value)}
             className="my-8 w-52 md:w-72 rounded-full py-1.5 px-4 dark:placeholder:text-blue-300 bg-transparent border dark:border-white  border-stone-600  "
-          /> 
+          />
 
           <br />
 
